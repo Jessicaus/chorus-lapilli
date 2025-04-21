@@ -16,6 +16,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:py": "python3 test_chorus_lapilli.py",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
