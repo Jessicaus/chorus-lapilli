@@ -1,53 +1,14 @@
 import {useState} from 'react';
 import './App.css';
-import Square from './Pages/Square.jsx';
 
-
-function Board({xIsNext, squares, onPlay}) {
-  const indices = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-  //const [xIsNext, setXIsNext] = useState(true);
-  //const [squares, setSquares] = useState(Array(9).fill(null));
-
-  const winner = calculateWinner(squares);
-  let status;
-  if (winner) {
-    status = "Winner: " + winner;
-  }
-  else {
-    status = "Next player: " + (xIsNext ? "X" : "O");
-  }
-
-  function handleClick(i) {
-      if (squares[i] || calculateWinner(squares)) return; //if already filled
-      const nextSquares = squares.slice(); //very quick and standard way. React relies on the reliability (immutability) of its objects
-      xIsNext ? nextSquares[i] = 'X' : nextSquares[i] = 'O';
-      //setXIsNext(!xIsNext);
-      //setSquares(nextSquares);
-      onPlay(nextSquares);
-  }
-
-  return (
-    <div className="App">
-      <header className="App-header">
-      <div className="board">
-        {indices.map((index) => (
-          <Square key={index} value={squares[index]} onSquareClick={() => handleClick(index)}/>
-        ))}
-      </div>
-      <p>
-        {status}
-      </p>
-
-    </header>
-    </div>
-  );
-}
+import Board from './Pages/Board.jsx';
 
 export default function Game() {
   //const [xIsNext, setXIsNext] = useState(true);
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = currentMove % 2 === 0; //this is the current player
+  const isPlacementPhase = currentMove < 6; //is it placement or moving phase?
   const currentSquares = history[currentMove];
 
   function handlePlay(nextSquares) {
@@ -81,7 +42,7 @@ export default function Game() {
   return (
     <div className="game">
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
+        <Board xIsNext={xIsNext} isPlacementPhase={isPlacementPhase} squares={currentSquares} onPlay={handlePlay}/>
       </div>
       <div className="game-info">
         <div>{/* status */}</div>
@@ -92,25 +53,3 @@ export default function Game() {
 }
 
 //export default App;
-
-function calculateWinner(squares) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
-  ];
-  
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
-  
-  return null;
-}
